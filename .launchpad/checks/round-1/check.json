@@ -1,0 +1,19 @@
+{
+  "name": "round 1: The machine",
+  "run": "node .launchpad/checks/round-1/run.mjs",
+  "timeoutSeconds": 420,
+  "tests": [
+    "renders opaque non-uniform frames at different canvas sizes",
+    "reproduces identical pixels after other seeds and times",
+    "changes the artwork across distinct animation times",
+    "changes the artwork when the seed changes",
+    "aligns corner and neighbouring slice crops with the whole machine",
+    "rejects malformed seeds after rendering a valid seed",
+    "rejects negative nonfinite and nonnumeric times after a valid time",
+    "rejects invalid or out-of-bounds viewports after a valid viewport",
+    "plays and pauses the visible artwork",
+    "scrubs to repeatable visible frames",
+    "applies preview seeds reproducibly in the viewer",
+    "renders without external requests or uncaught browser errors"
+  ]
+}
