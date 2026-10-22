@@ -98,21 +98,22 @@ test('hexadecimal case, unrelated renders, DOM changes and disabled entropy do n
   }), true);
 });
 
-test('half-scale crops match the same region of the full work', async () => {
+test('half-scale and magnified crops match the same region of the full work', async () => {
   assert.deepEqual(await inRuntime(() => {
     const results = [];
-    for (const seedValue of [seed, '0x' + 'ab'.repeat(32)]) {
-      const full = document.createElement('canvas'); full.width = full.height = 1000;
+    for (const scale of [.5, 2]) for (const seedValue of [seed, '0x' + 'ab'.repeat(32)]) {
+      const full = document.createElement('canvas'); full.width = full.height = 2000 * scale;
       renderFrame(full, { seed: seedValue, timeMs: 5039, viewport });
       const v = { x: 948, y: 960, width: 104, height: 80 };
-      const crop = document.createElement('canvas'); crop.width = 52; crop.height = 40;
+      const crop = document.createElement('canvas'); crop.width = v.width * scale; crop.height = v.height * scale;
       renderFrame(crop, { seed: seedValue, timeMs: 5039, viewport: v });
-      const a = crop.getContext('2d').getImageData(2, 2, 48, 36).data;
-      const b = full.getContext('2d').getImageData(v.x / 2 + 2, v.y / 2 + 2, 48, 36).data;
+      const w = crop.width - 4, h = crop.height - 4;
+      const a = crop.getContext('2d').getImageData(2, 2, w, h).data;
+      const b = full.getContext('2d').getImageData(v.x * scale + 2, v.y * scale + 2, w, h).data;
       results.push(a.every((value, i) => Math.abs(value - b[i]) <= 2));
     }
     return results;
-  }), [true, true]);
+  }), [true, true, true, true]);
 });
 
 test('server rejects malformed ports and path traversal and serves ES modules', async () => {

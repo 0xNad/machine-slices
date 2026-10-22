@@ -27,30 +27,33 @@ function validate(canvas: HTMLCanvasElement, options: FrameOptions): void {
 const surfaces = new WeakMap<HTMLCanvasElement, OffscreenCanvas>();
 
 /**
- * One canonical world raster keeps curve tessellation and antialiasing independent
- * of viewport clipping. A close view is literally a window into the same 2000px
- * world, rather than a second rasterization of a partially clipped curve.
+ * A canonical world raster keeps curve tessellation and antialiasing independent
+ * of viewport clipping. Equal-scale views choose the same density. Magnified
+ * inspection gets a 2x world raster for finer engraved detail.
  */
 export function renderFrame(canvas: HTMLCanvasElement, options: FrameOptions): void {
   validate(canvas, options);
   const c = canvas.getContext('2d');
   if (!c) throw new Error('A Canvas 2D context is required.');
+  const v = options.viewport;
+  const density = Math.max(canvas.width / v.width, canvas.height / v.height) > 1 ? 2 : 1;
+  const side = 2000 * density;
   let surface = surfaces.get(canvas);
-  if (!surface) {
-    surface = new OffscreenCanvas(2000, 2000);
+  if (!surface || surface.width !== side) {
+    surface = new OffscreenCanvas(side, side);
     surfaces.set(canvas, surface);
   }
   const world = surface.getContext('2d');
   if (!world) throw new Error('An offscreen Canvas 2D context is required.');
   world.reset();
+  world.scale(density, density);
   drawMachine(world, options.seed, options.timeMs);
   // reset() removes prior clipping and drawing state without resizing the canvas.
   c.reset();
   c.imageSmoothingEnabled = true;
   c.imageSmoothingQuality = 'high';
-  const v = options.viewport;
   // Canvas implementations round source rectangles to float precision. Preserve an
   // opaque sample even when a valid positive extent is smaller than that precision.
-  const width = Math.max(v.width, 1 / 256), height = Math.max(v.height, 1 / 256);
-  c.drawImage(surface, Math.min(v.x, 2000 - width), Math.min(v.y, 2000 - height), width, height, 0, 0, canvas.width, canvas.height);
+  const width = Math.max(v.width, 1 / (256 * density)), height = Math.max(v.height, 1 / (256 * density));
+  c.drawImage(surface, Math.min(v.x, 2000 - width) * density, Math.min(v.y, 2000 - height) * density, width * density, height * density, 0, 0, canvas.width, canvas.height);
 }

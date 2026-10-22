@@ -61,11 +61,13 @@ renderFrame(canvas, {
 - `src/machine.ts` composes the organism in absolute world coordinates.
   `src/drawing.ts` contains its drawing primitives. `src/seed.ts` derives all
   variation from all 32 bytes of the seed. Hexadecimal letter case is equivalent.
-- A canonical **2000 × 2000 offscreen world raster** is redrawn completely on
-  every call, then cropped/scaled onto the supplied canvas. This keeps Canvas
+- A canonical offscreen world raster is redrawn completely on every call,
+  then cropped/scaled onto the supplied canvas. Views at or below world scale
+  use 2000 × 2000; magnified views use 4000 × 4000 for finer engraving. Equal
+  scales always use the same density. This keeps Canvas
   curve tessellation and clipping from producing different pixels in close
-  windows. Magnification enlarges this shared raster, with image smoothing.
-  Each target reuses one 16 MB backing surface through a weak reference; no prior
+  windows. Magnification uses image smoothing. Each target reuses one backing surface
+  (16 MB, or 64 MB for magnification) through a weak reference; no prior
   pixels or simulation values are inputs to the next frame. `OffscreenCanvas`
   and Canvas 2D `reset()` require a modern browser, including the pinned Chromium.
 - Each frame is a closed-form function of the seed and explicit time. The seeded
