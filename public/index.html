@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Machine Slices</title>
+<style>body{margin:2rem;background:#101619;color:#e8e2d5;font:16px system-ui}main{max-width:850px;margin:auto}canvas{width:min(100%,650px);height:auto;background:#172127}label{display:block;margin:1rem 0}input{max-width:100%;width:36rem}button{padding:.6rem 1rem}#status{color:#e0ad75}</style></head>
+<body><main><h1>Machine Slices</h1><p>One machine. One thousand windows.</p><canvas id="artwork" width="800" height="800" aria-label="Machine artwork"></canvas>
+<div><button id="play" type="button">Play</button><button id="pause" type="button">Pause</button></div>
+<label>Time (milliseconds)<input id="time" type="range" min="0" max="60000" step="1" value="0"></label>
+<label>Preview seed<input id="seed" value="0x1111111111111111111111111111111111111111111111111111111111111111"></label><button id="apply-seed" type="button">Apply seed</button>
+<p id="status" role="status">Round 1 starts here.</p><script type="module" src="/dist/viewer.js"></script></main></body></html>
